@@ -9,10 +9,13 @@ terraform {
 
 provider "azurerm" {
   features {}
-vinod {}
+  vinod {}
+  config {}
+  config2 {}
   subscription_id = "247d5ce7-c0a1-4b83-8d9c-30b55c958e6c"
   # ravi () --- IGNORE ---
 # ajay () --- IGNORE crete ajay branch---
 dddd
 # ajaylatest () --- IGNORE crete ajay branch---
+ # vinodllll () --- IGNORE ---
 }
