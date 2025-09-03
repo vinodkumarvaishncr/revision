@@ -1,0 +1,85 @@
+trigger:
+- none
+
+pool: "agent5"
+
+variables:
+  path: '$(System.DefaultWorkingDirectory)'
+  connection: 'connection_new'
+  storageAccount: 'vinodmainstorage'
+  container: 'vinodconatiner'
+  key: 'review.tfstate'
+ 
+jobs:
+-  job: "terraform_init"
+   displayName: "terraform init"
+   steps:
+   - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+     parameters:
+        path: '$(path)'
+        connectionName: '$(connection)'
+        storageAccount: '$(storageAccount)'
+        containerName: '$(container)'
+        key: '$(key)'
+- job: "terraform_validate"
+  displayName: "terrform validate"
+  dependsOn: "terraform_init"
+  pool: agent5
+  steps:
+    - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+      parameters:
+        path: '$(path)'
+        connectionName: '$(connection)'
+        storageAccount: '$(storageAccount)'
+        containerName: '$(container)'
+        key: '$(key)'
+  
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+
+- job: "terraform_plan"
+  pool: agent5
+  displayName: "terraform plan"
+  dependsOn: "terraform_validate"
+  steps:
+    - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+      parameters:
+        path: '$(path)'
+        connectionName: '$(connection)'
+        storageAccount: '$(storageAccount)'
+        containerName: '$(container)'
+        key: '$(key)'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        environmentServiceNameAzureRM: 'connection_new'
+
+- job: "manual_validation"
+  displayName: "manual validation"
+  pool: server
+  steps:
+  - task: ManualValidation@1
+    inputs:
+      notifyUsers: 'vinodkumarvaishncr@gmail.com'
+      instructions: 'vinodkumarvaishncr@gmail.com'
+-  job: "terraform_apply"
+   displayName: "terraform apply"
+   dependsOn: "manual_validation"
+   pool: agent5
+   steps:
+    - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+      parameters:
+        path: '$(path)'
+        connectionName: '$(connection)'
+        storageAccount: '$(storageAccount)'
+        containerName: '$(container)'
+        key: '$(key)'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        commandOptions: '-auto-approve'
+        environmentServiceNameAzureRM: 'connection_new'
