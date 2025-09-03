@@ -14,7 +14,7 @@ jobs:
 -  job: "terraform_init"
    displayName: "terraform init"
    steps:
-   - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+   - template: templates/terraform-init.yml
      parameters:
         path: '$(path)'
         connectionName: '$(connection)'
@@ -26,7 +26,7 @@ jobs:
   dependsOn: "terraform_init"
   pool: agent5
   steps:
-    - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+    - template: templates/terraform-init.yml
       parameters:
         path: '$(path)'
         connectionName: '$(connection)'
@@ -44,7 +44,7 @@ jobs:
   displayName: "terraform plan"
   dependsOn: "terraform_validate"
   steps:
-    - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+    - template: templates/terraform-init.yml
       parameters:
         path: '$(path)'
         connectionName: '$(connection)'
@@ -70,7 +70,7 @@ jobs:
    dependsOn: "manual_validation"
    pool: agent5
    steps:
-    - template: $(System.DefaultWorkingDirectory)/templates/terraform-init.yml
+    - template: templates/terraform-init.yml
       parameters:
         path: '$(path)'
         connectionName: '$(connection)'
