@@ -1,11 +1,11 @@
 # File: azure-pipelines/templates/terraform-init.yml
 
 parameters:
-  path: '$(System.DefaultWorkingDirectory)'
-  connectionName: 'connection_new'
-  storageAccount: 'vinodmainstorage'
-  containerName: 'vinodconatiner'
-  key: 'kumarkey.tfstate'
+  path: ''
+  connectionName: ''
+  storageAccount: ''
+  containerName: ''
+  key: ''
 
 steps:
   - task: TerraformInstaller@1
