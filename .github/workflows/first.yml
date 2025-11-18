@@ -1,4 +1,4 @@
-name: Terraform Azure Deployment
+name: Terraform Deployment
 
 on:
   push:
@@ -8,36 +8,50 @@ on:
 
 jobs:
   terraform:
-    runs-on: vinodrevision
+    runs-on: self-hosted
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install Terraform (latest)
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: latest
+      # Step 2: Verify Terraform (use pre-installed version on self-hosted runner)
+      - name: Verify Terraform
+        run: terraform -v
 
-      # Azure Login using service principal
-      - name: Azure CLI Login
+      # Step 3: Azure Login (OIDC)
+      - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          # ClientId of the Azure Service principal created.
+          client-id: '5a74446b-d55e-451c-a437-85a81e5e736e'
+          # TenantId of the Azure Service principal created.
+          tenant-id: 'af734fcf-6a49-4af5-8ec9-51df7466b2c5'
+          # Azure subscriptionId
+          subscription-id: '95a90f4b-7e15-47ba-95ab-0d52bac078e4'
+          
 
-      # Terraform Init
+      # Step 4: Terraform Init
       - name: Terraform Init
+        working-directory: .
         run: terraform init
 
-      # Terraform Validate
+      # Step 5: Terraform Validate
       - name: Terraform Validate
+        working-directory: .
         run: terraform validate
 
-      # Terraform Plan
+      # Step 6: Terraform Plan
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        working-directory: .
+        run: terraform plan
 
-      # Terraform Apply
+      # Step 7: Terraform Apply (only for main branch)
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        if: github.ref == 'refs/heads/main'
+        working-directory: .
+        run: terraform apply -auto-approve
