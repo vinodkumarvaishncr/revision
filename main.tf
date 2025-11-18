@@ -15,7 +15,7 @@ resource "azurerm_resource_group" "rg5" {
       Owner       = "vinod"
     }
 }
-
+/*
 resource "azurerm_virtual_network" "vnet1" {
   name                = "canada-vinod-vnet"
   address_space       = ["10.0.0.0/20"]
@@ -68,3 +68,4 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 }
+*/
